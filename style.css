@@ -1,0 +1,640 @@
+/* ==========================================================================
+   TEAS Triangle — style.css (clean + organisé)
+   ========================================================================== */
+
+/* 1) Variables (thème) */
+:root {
+  --bg: #0c0f14;
+  --panel: #121620;
+  --canvas-bg: #0b0f18;
+
+  --text: #e6eef6;
+  --muted: #9fb0c2;
+  --accent: #7cc4ff;
+
+  --border: #1e2633;
+  --line: #22324a;
+
+  --button-bg: #141b2a;
+  --button-border: #2d3b54;
+  --hover-border: #3a5277;
+
+  --select-bg: #0f1420;
+  --select-border: #29364b;
+
+  --selector-bg: #0e1420;
+  --selector-border: #263043;
+
+  --tooltip-bg: rgba(20,24,34,0.9);
+
+  /* colonne des points cliqués */
+  --picks-width: 320px;
+
+  /* Groupes d’infos solvants */
+  --head-font: inherit;
+  --core-font: inherit;
+  --phys-font: inherit;
+
+  --head-color: #bdc3c9;
+  --core-color: #ffffff;
+  --phys-color: #bdc3c9;
+
+  --sep-color: rgba(230,238,246,0.18);
+
+  /* MIX — séparateurs personnalisables */
+  --mix-sep-core-color: rgba(230,238,246,0.22);
+  --mix-sep-core-thickness: 1px;
+  --mix-sep-core-style: solid;
+  --mix-sep-core-margin: 8px 0 10px 0;
+
+  --mix-sep-vol-color: rgba(230,238,246,0.22);
+  --mix-sep-vol-thickness: 1px;
+  --mix-sep-vol-style: dashed;
+  --mix-sep-vol-margin: 10px 0;
+
+  --mix-sep-note-color: rgba(230,238,246,0.22);
+  --mix-sep-note-thickness: 1px;
+  --mix-sep-note-style: solid;
+  --mix-sep-note-margin: 10px 0 0 0;
+
+  --mix-core-font: "Inter", system-ui, sans-serif;
+  --mix-core-size: 12px;
+  --mix-core-color: #ffffff;
+
+  --mix-vol-font: "Inter", system-ui, sans-serif;
+  --mix-vol-size: 14px;
+  --mix-vol-color: #bdc3c9;
+
+  --mix-note-font: "Inter", system-ui, sans-serif;
+  --mix-note-size: 10px;
+  --mix-note-color: #bdc3c9;
+}
+
+/* 2) Reset & base */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* pas de scroll global */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1 { margin: 0 0 10px; font-size: 18px; font-weight: 600; }
+h2 {
+  margin: 18px 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 3) Layout */
+.wrap {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 0;
+  height: 100vh;
+}
+
+aside {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow: auto;
+}
+
+main {
+  height: 100vh;
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 4) Canvas / 3D container */
+#threejs-holder {
+  flex: 1 1 auto;
+  min-height: 640px;
+  height: 70vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--canvas-bg);
+  overflow: hidden;
+}
+#threejs-holder > canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* HUD bas-gauche */
+.hud-corner {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 8px;
+  font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #fff;
+  border: 1px solid var(--selector-border);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* 5) Bandes flottantes (légende / contrôles) */
+.legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  right: 12px;
+  z-index: 5;
+  margin: 0 0 10px;
+  padding: 6px 8px;
+  color: var(--muted);
+  border-radius: 10px;
+  background: linear-gradient(
+    to right,
+    rgba(11,15,24,.6),
+    rgba(58,71,102,0.9),
+    rgba(11,15,24,.6)
+  );
+  backdrop-filter: blur(4px);
+}
+
+/* Barre labels/zoom */
+#labelsUI {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  height: 42px;
+}
+#labelsUI .zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#labelsUI .zoom-control span {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* 6) Formulaires & boutons */
+select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: inherit;
+  background: var(--select-bg);
+  border: 1px solid var(--select-border);
+  border-radius: 10px;
+}
+#labelsUI input[type="range"] { accent-color: #7f9cff; }
+
+.btn {
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text);
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  border-radius: 10px;
+  transition: border-color 0.2s ease;
+}
+.btn:hover { border-color: var(--hover-border); }
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* 7) Cartes “sélecteurs” (solvants, polymères, mélanges) */
+.selector {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: var(--selector-bg);
+  border: 1px solid var(--selector-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header compact */
+.selector-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.selector-header select {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-height: 34px;
+}
+
+/* Chevron (repli) */
+.chev {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 1px solid var(--selector-border);
+  border-radius: 6px;
+  background: var(--select-bg);
+  transition: transform 0.18s ease;
+}
+.chev svg { width: 12px; height: 12px; opacity: .8; }
+.selector.collapsed .chev { transform: rotate(-90deg); }
+
+/* Contenu repliable */
+.info { margin-top: 6px; }
+.selector.collapsed .info { display: none; }
+
+/* Grille 3 colonnes générique */
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Toggle “Relier” */
+.link-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-size: 0; /* on masque le texte, seul le span gère */
+  color: var(--muted);
+}
+
+/* Bouton croix (fermer) */
+.selector-close {
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  color: #cbd5e1;
+  cursor: pointer;
+  border: 1px solid var(--selector-border);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  opacity: .85;
+  transition: background-color .15s, border-color .15s, transform .12s, opacity .12s;
+}
+.selector-close:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--hover-border);
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+/* 8) Fiches d’infos solvants — groupes & grilles */
+.selector .info { display: grid; gap: 8px; }
+
+.selector .info .info-sep {
+  border: 0;
+  border-top: 1px solid var(--sep-color);
+  margin: 0;
+}
+
+/* Groupes */
+.selector .info .info-group.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--head-font);
+  font-size: 12px;
+  color: var(--head-color);
+}
+.selector .info .info-group.head .formula-text { text-align: left; }
+.selector .info .info-group.head .cas-text { text-align: right; }
+
+.selector .info .info-group.core {
+  font-family: var(--core-font);
+  font-size: 14.5px;
+  color: var(--core-color);
+}
+.selector .info .info-group.phys {
+  font-family: var(--phys-font);
+  font-size: 12px;
+  color: var(--phys-color);
+}
+
+/* Grilles internes */
+.selector .info .info-group.core .param-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 6px 10px;
+}
+.selector .info .info-group.phys .param-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 6px 10px;
+}
+
+/* Valeurs non wrap (fd/fp/fh, δ, V, etc.) */
+.param-grid > div,
+.mix-summary .param-grid > div,
+.pick-card .row > div {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+/* V en pleine largeur dans les grilles 3 colonnes */
+.info .param-grid [data-kv="V"],
+.mix-summary .param-grid [data-kv="V"],
+.pick-card .row [data-kv="V"] {
+  grid-column: 1 / -1;
+}
+
+/* 9) Mix (UI spécifique) */
+.mix-card .selector-header { gap: 10px; }
+
+.mix-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid var(--selector-border);
+  border-radius: 999px;
+  opacity: .9;
+}
+.mix-status.ok {
+  color: #72e18a;
+  border-color: #33553d;
+  background: rgba(114,225,138,0.08);
+}
+.mix-status.warn {
+  color: #ff8a8a;
+  border-color: #5a3232;
+  background: rgba(255,138,138,0.08);
+}
+
+/* Lignes / sliders / verrous */
+.mix-rows { display: flex; flex-direction: column; gap: 6px; }
+.mix-row {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 6px 0;
+  border-top: 1px dashed var(--selector-border);
+}
+.mix-row:first-child { border-top: none; }
+.mix-row-head { display: flex; align-items: center; gap: 8px; }
+.mix-row-head select { flex: 1 1 auto; min-width: 0; }
+.mix-row-controls { display: flex; align-items: center; gap: 8px; }
+.mix-row-controls input[type="range"] { flex: 1 1 auto; }
+.mix-row-controls input[type="range"]:disabled { opacity: .5; cursor: not-allowed; }
+.pct { width: 56px; text-align: right; opacity: .9; }
+.lock-btn {
+  padding: 4px 8px;
+  cursor: pointer;
+  border: 1px solid var(--selector-border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+}
+.lock-btn[aria-pressed="true"] { background: rgba(255,255,255,0.12); }
+
+/* Repli du mix */
+.mix-card.mix-collapsed .mix-rows,
+.mix-card.mix-collapsed .mix-actions { display: none; }
+.mix-card.mix-collapsed .mix-summary { display: none; }
+
+/* Séparateurs & typographies du résumé */
+.mix-card .mix-actions + .mix-summary {
+  border-top: var(--mix-sep-core-thickness) var(--mix-sep-core-style) var(--mix-sep-core-color);
+  margin: var(--mix-sep-core-margin);
+  padding-top: 8px;
+  font-family: var(--mix-core-font);
+  font-size: var(--mix-core-size);
+  color: var(--mix-core-color);
+}
+
+.mix-card .mix-summary .param-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 6px 10px;
+}
+.mix-card .mix-summary .param-grid:has([data-kv="V"]) {
+  border-top: var(--mix-sep-vol-thickness) var(--mix-sep-vol-style) var(--mix-sep-vol-color);
+  margin: var(--mix-sep-vol-margin);
+  padding-top: 8px;
+  grid-template-columns: repeat(2, minmax(0,1fr)); /* V (+ Tb) sur 2 colonnes */
+  font-family: var(--mix-vol-font);
+  font-size: var(--mix-vol-size);
+  color: var(--mix-vol-color);
+}
+
+/* Note */
+.mix-card .mix-note {
+  border-top: var(--mix-sep-note-thickness) var(--mix-sep-note-style) var(--mix-sep-note-color);
+  margin: var(--mix-sep-note-margin);
+  padding-top: 8px;
+  font-family: var(--mix-note-font);
+  font-size: var(--mix-note-size);
+  color: var(--mix-note-color);
+  line-height: 1.2;
+}
+
+/* 10) Tooltips (3D hover) */
+.tooltip {
+  position: fixed;
+  z-index: 99999;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--tooltip-bg);
+  border: 1px solid var(--selector-border);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+/* 11) Colonne des points cliqués */
+body.has-picks #threejs-holder {
+  width: calc(100% - var(--picks-width));
+}
+
+#pickedColumn {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--picks-width);
+  height: 100vh;
+  padding: 12px;
+  overflow: auto;
+  display: none;
+  background: #0f1320;
+  border-left: 1px solid rgba(255,255,255,.08);
+  box-shadow: -8px 0 24px rgba(0,0,0,.25);
+}
+body.has-picks #pickedColumn { display: block; }
+
+/* Cartes de points */
+.pick-card {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: #141a2a;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+}
+.pick-card h4 { margin: 0 0 8px; font-size: 14px; }
+.pick-card .row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 6px;
+  margin: 6px 0;
+}
+.pick-card .row > div {
+  font: 12px/1.2 ui-monospace, Menlo, Consolas, monospace;
+  color: #e6eef6;
+}
+.pick-card input[type="text"] {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  color: #fff;
+  background: #0c1020;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+}
+
+/* Suggestions */
+.pick-suggest h5 {
+  margin: 10px 0 6px;
+  font-size: 12px;
+  color: #9bb4d0;
+}
+.pick-suggest .item {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #0c1020;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+}
+.pick-suggest .item small { opacity: .75; }
+
+/* En-tête + bouton fermer */
+.pick-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.pick-close {
+  width: 26px; height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  color: #cbd5e1;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,.06);
+}
+.pick-close:hover {
+  background: rgba(255,255,255,.12);
+  border-color: var(--hover-border);
+}
+
+/* Titre éditable (points + mélanges) */
+.editable-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  padding: 2px 4px;
+  cursor: text;
+  color: #e2e8f0;
+  transition: background .2s, color .2s;
+  border-radius: 4px;
+}
+.editable-title[contenteditable="true"] {
+  outline: none;
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+
+/*  POLYMERE STYLE */
+
+/* ================== CARTES POLYMERES ================== */
+
+/* 1) Variables pour gérer polices/couleurs (modifiable facilement) */
+:root{
+  --poly-cas-size: 12px;   --poly-cas-color: #bdc3c9;
+
+  --poly-tg-size: 13px;    --poly-tg-color: #ffffff;
+  --poly-sep-color: rgba(230,238,246,0.22);
+  --poly-sep-margin: 6px 0;
+
+  --poly-comp-size: 12px;  --poly-comp-color: #cbd5e1;
+  --poly-note-size: 11px;  --poly-note-color: #94a3b8;
+}
+
+/* 2) Grille: sur polymère on passe les "phys" en 1 colonne (plein large) */
+.selector.polymer .info .info-group.phys .param-grid{
+  grid-template-columns: 1fr;
+}
+
+/* 3) CAS en-tête (gauche) */
+.selector.polymer .info [data-kv="CAS"]{
+  font-size: var(--poly-cas-size);
+  color: var(--poly-cas-color);
+}
+
+/* 4) Tg (pas de wrap), Composition & Note (wrap activé) */
+.selector.polymer .info [data-kv="Tg_C"]{
+  font-size: var(--poly-tg-size);
+  color: var(--poly-tg-color);
+  white-space: nowrap;
+}
+.selector.polymer .info [data-kv="composition"],
+.selector.polymer .info [data-kv="note"]{
+  white-space: normal;         /* <-- autorise les retours à la ligne */
+  line-height: 1.3;
+}
+.selector.polymer .info [data-kv="composition"]{
+  font-size: var(--poly-comp-size);
+  color: var(--poly-comp-color);
+}
+.selector.polymer .info [data-kv="note"]{
+  font-size: var(--poly-note-size);
+  color: var(--poly-note-color);
+}
+
+/* 5) Ligne de séparation entre Tg et Composition */
+.selector.polymer .info .poly-split{
+  border: 0;
+  border-top: 1px dashed var(--poly-sep-color);
+  margin: var(--poly-sep-margin);
+}
