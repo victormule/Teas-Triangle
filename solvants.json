@@ -1418,6 +1418,19 @@
   "Tb_C": 233.0,
   "CAS": "680-31-9"
 },
+  {
+  "name": "Isooctane",
+  "formula": "C9H14O",
+  "fd": 98,
+  "fp": 1,
+  "fh": 1,
+  "D": /,
+  "P": /,
+  "H": /,
+  "V": /,
+  "Tb_C": /,
+  "CAS": "540-84-1"
+},
 {
   "name": "Isophorone",
   "formula": "C9H14O",
