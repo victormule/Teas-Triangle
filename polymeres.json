@@ -450,6 +450,17 @@
     "note": "Produit commercial le plus rependu",
     "Tg_C": 70
   },
+        {
+    "name": " Crasse sur plexis rose",
+    "D": 50,
+    "P": 20,
+    "H": 30,
+    "R0": 13,
+    "cas": null,
+    "composition": "",
+    "note": "",
+    "Tg_C": 70
+  },
   {
     "name": "Vinsol (rosin modifié)",
     "D": 17.4,
