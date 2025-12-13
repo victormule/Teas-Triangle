@@ -1,10 +1,8 @@
 'use strict';
 
 /* =============================================================================
- *  TEAS TRIANGLE — Script principal
- *  - Organisation par modules (classes)
- *  - Commentaires au niveau des blocs et méthodes
- *  - Conservation des fonctionnalités existantes
+ *  TEAS TRIANGLE v1.0 — ESAA PROJECT — ADALIA By Victor Mulé
+ *  - Triangle de solubilité interactif - Outil pour la restauration conservation
  * ========================================================================== */
 
 /* ============================================================================
@@ -53,15 +51,14 @@ class DataManager {
     this.solvents = [];
     this.misc = new Map();
     this.polymers = [];
-    this.meanDPHSum = 30; // fallback si on ne peut pas l’estimer
+    this.meanDPHSum = 30;
   }
 
-  // Charge tout en parallèle. polymers.json est optionnel : on n’échoue pas si absent.
   async load() {
     const [solvRes, miscRes, polyRes] = await Promise.all([
       fetch('./solvants.json'),
       fetch('./miscibilite_matrix.csv'),
-      fetch('./polymeres.json').catch(() => null) // au cas où le fetch lui-même échoue
+      fetch('./polymeres.json').catch(() => null) 
     ]);
 
     // Solvants + miscibilité (obligatoires)
@@ -74,7 +71,6 @@ class DataManager {
       try {
         this.polymers = await polyRes.json();
       } catch (_) {
-        // JSON invalide → on ignore et on laisse la liste vide
         this.polymers = [];
       }
     }
@@ -176,7 +172,7 @@ class MathUtils {
     };
   }
 
-  /** XY → TEAS (%) — inverse analytique de la projection ci-dessus */
+  /** XY → TEAS (%) — inverse analytique de la projection */
   static xyToTeas(x, y) {
     const size = CONFIG.TRIANGLE.SIZE;
     const fp = (2 * y / (size * CONFIG.MATH.SQRT3)) + 1/3;
@@ -207,7 +203,7 @@ class MathUtils {
 
 
 /* ============================================================================
- * 4) SELECTION MANAGER — Sélections UI (solvants/polymères) côté état
+ * 4) SELECTION MANAGER — Sélections UI (solvants/polymères)
  * ========================================================================== */
 class SelectionManager {
   constructor() {
@@ -313,13 +309,11 @@ static _info(kind = 'solvent') {
   gHead.className = 'info-group head';
 
   if (kind === 'polymer') {
-    // Polymère : CAS à gauche, pas de formule
     const cas = document.createElement('div');
     cas.className = 'cas-text';
     cas.dataset.kv = 'CAS';
     gHead.appendChild(cas);
   } else {
-    // Solvant : Formule à gauche, CAS à droite
     const formula = document.createElement('div');
     formula.className = 'formula-text';
     formula.dataset.kv = 'formula';
@@ -353,21 +347,17 @@ static _info(kind = 'solvent') {
   gPhys.className = 'info-group phys';
 
   if (kind === 'polymer') {
-    // Tg seule sur sa ligne
     const rTg = document.createElement('div');
     rTg.className = 'row param-grid';
     rTg.innerHTML = '<div data-kv="Tg_C" style="grid-column:1/-1"></div>';
 
-    // Séparateur entre Tg et Composition
     const split = document.createElement('hr');
     split.className = 'info-sep poly-split';
-
-    // Composition (pleine largeur)
+    
     const rComp = document.createElement('div');
     rComp.className = 'row param-grid';
     rComp.innerHTML = '<div data-kv="composition" style="grid-column:1/-1"></div>';
 
-    // Note (pleine largeur)
     const rNote = document.createElement('div');
     rNote.className = 'row param-grid';
     rNote.innerHTML = '<div data-kv="note" style="grid-column:1/-1"></div>';
@@ -377,6 +367,7 @@ static _info(kind = 'solvent') {
     gPhys.appendChild(rComp);
     gPhys.appendChild(rNote);
   } else {
+    
     // Solvant : V + Tb
     const r3 = document.createElement('div');
     r3.className = 'row param-grid';
@@ -431,7 +422,6 @@ static _fill(info, item, kind = 'solvent') {
   set('H',  `δH=${Number.isFinite(item.H) ? item.H.toFixed(1) : ''}`);
 
   if (kind === 'polymer') {
-    // CAS à gauche — on tolère "CAS" ou "cas" dans le JSON
     const cas = item.CAS ?? item.cas;
     set('CAS', `CAS: ${cas || 'N/A'}`);
 
@@ -897,7 +887,7 @@ updateLabelVisibility() {
   for (const lbl of this.solventLabels) if (lbl) lbl.visible = this.showSolventLabels;
   // labels mixes
   for (const o of this.mixObjects.values()) if (o.label) o.label.visible = this.showSolventLabels;
-  // labels des points cliqués (sphères rouges)
+  // labels des points cliqués
   for (const p of this.picks.values()) if (p.label) p.label.visible = this.showSolventLabels;
 }
 
@@ -932,7 +922,7 @@ renamePick(id, newName) {
   
   if (p.sphere) p.sphere.userData.name = newName;
 
-  // remplace le sprite de texte (plus simple que d’éditer la texture)
+  // remplace le sprite de texte
   if (p.label) {
     const pos = p.label.position.clone();
     p.label.parent?.remove(p.label);
